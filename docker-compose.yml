@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+
+  nginx:
+    build:
+      context: .
+      target: symfony_docker_nginx
+    depends_on:
+      - app
+    ports:
+      - '80:80'
+
+  app:
+    build:
+      context: .
+      target: symfony_docker_php
+      args:
+        SYMFONY_VERSION: ${SYMFONY_VERSION:-}
+        STABILITY: ${SYMFONY_STABILITY:-stable}
+    environment:
+      - SYMFONY_VERSION
