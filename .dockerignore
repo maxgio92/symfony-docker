@@ -5,5 +5,9 @@
 **/.gitattributes
 **/Thumbs.db
 .dockerignore
-Dockerfile
-docker-compose.yaml
+/Dockerfile
+/docker-compose.yml
+/docker-compose.*.yml
+/README.md
+/.env.example
+/.env
