@@ -83,9 +83,24 @@ COPY docker/app/conf.d/symfony.ini $PHP_INI_DIR/conf.d/symfony.ini
 
 WORKDIR /srv/app
 
+RUN composer global require "symfony/flex" --prefer-dist --no-progress --no-suggest --classmap-authoritative  --no-interaction
+RUN composer create-project "symfony/skeleton ${SYMFONY_VERSION}" . --stability=$STABILITY --prefer-dist --no-dev --no-progress --no-scripts --no-plugins --no-interaction
+
 COPY . .
 
 RUN mkdir -p var/cache var/logs var/sessions \
     && composer install --prefer-dist --no-dev --no-scripts --no-progress --no-suggest --classmap-authoritative --no-interaction \
     && composer clear-cache \
     && chown -R www-data var
+
+# ----- PHP DEV -----
+
+FROM symfony_docker_php as symfony_docker_php_dev
+
+ARG XDEBUG_VERSION=2.7.2
+
+RUN set -eux; \
+	apk add --no-cache --virtual .build-deps $PHPIZE_DEPS; \
+	pecl install xdebug-$XDEBUG_VERSION; \
+	docker-php-ext-enable xdebug; \
+	apk del .build-deps
