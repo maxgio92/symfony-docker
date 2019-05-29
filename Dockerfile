@@ -83,6 +83,9 @@ COPY docker/app/conf.d/symfony.ini $PHP_INI_DIR/conf.d/symfony.ini
 
 WORKDIR /srv/app
 
+RUN composer global require "symfony/flex" --prefer-dist --no-progress --no-suggest --classmap-authoritative  --no-interaction
+RUN composer create-project "symfony/skeleton ${SYMFONY_VERSION}" . --stability=$STABILITY --prefer-dist --no-dev --no-progress --no-scripts --no-plugins --no-interaction
+
 COPY . .
 
 RUN mkdir -p var/cache var/logs var/sessions \
