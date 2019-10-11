@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+
+  nginx:
+    volumes:
+      - ./public:/srv/app/public:ro
+
+  app:
+    volumes:
+      - ./:/srv/app:rw,cached
