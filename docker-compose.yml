@@ -10,6 +10,7 @@ services:
       - app
     ports:
       - '80:80'
+    restart: unless-stopped
 
   app:
     build:
@@ -20,3 +21,4 @@ services:
         STABILITY: ${SYMFONY_STABILITY:-stable}
     environment:
       - SYMFONY_VERSION
+    restart: unless-stopped
