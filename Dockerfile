@@ -37,10 +37,24 @@ FROM php:${PHP_VERSION}-fpm-alpine AS symfony_docker_php
 
 ARG STABILITY="stable"
 ARG SYMFONY_VERSION=""
+ARG FPM_POOL_UID
+ARG FPM_POOL_GID
 
 ENV STABILITY ${STABILITY:-stable}
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV APCU_VERSION 5.1.12
+
+RUN if [ ${FPM_POOL_UID:-0} -ne 0 ] && [ ${FPM_POOL_GID:-0} -ne 0 ]; then \
+    apk --no-cache add shadow && \
+    if getent group ${FPM_POOL_GID} > /dev/null; then \
+        groupmod -g 10${FPM_POOL_GID} $(getent group ${FPM_POOL_GID} | cut -d ':' -f1); \
+    fi && \
+    if getent passwd ${FPM_POOL_UID} > /dev/null; then \
+        usermod -u 10${FPM_POOL_UID} $(getent passwd ${FPM_POOL_UID} | cut -d ':' -f1); \
+    fi && \
+    usermod -u ${FPM_POOL_UID} www-data && \
+    groupmod -g ${FPM_POOL_GID} www-data \
+;fi
 
 RUN apk add --no-cache \
 		git \
@@ -58,6 +72,7 @@ RUN set -eux \
 	&& docker-php-ext-install -j$(nproc) \
 		intl \
 		zip \
+		mysqli \
 	&& pecl install \
 		apcu-${APCU_VERSION} \
 	&& docker-php-ext-enable --ini-name 20-apcu.ini apcu \
