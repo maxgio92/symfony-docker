@@ -7,5 +7,9 @@ services:
       - ./public:/srv/app/public:ro
 
   app:
+    build:
+      args:
+        -  FPM_POOL_UID=${PHP_FPM_POOL_UID}
+        -  FPM_POOL_GID=${PHP_FPM_POOL_GID}
     volumes:
       - ./:/srv/app:rw,cached
